@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Spotify Degrees of Separation</title>
+	<title>Spotify Related Artists</title>
 	<script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 	<script src="main.js"></script>
 	<link rel="stylesheet" type="text/css" href="main.css"></link>
 </head>
 <body>
 	<div id="pseudo-body">
-		<div id="header"><h1>Find the Degrees of Separation Between Two Artists</h1></div>
+		<div id="header"><h1>Find Related Artists for Two Artists</h1></div>
 		<div id="main-content">
-			<p>Enter two artists and submit to calculate their relation to eachother. If the artists are too different it may not work.</p>
 			<div id="artist-input">
+				<p>Enter two artists and submit to get their respective related artists.</p>
 				<input id="artist-a-input" list="artist-a-suggestions" type="text" placeholder="Artist A"/>
 				<datalist id="artist-a-suggestions"></datalist>
 				<input id="artist-b-input" list="artist-b-suggestions" type="text" placeholder="Artist B"/>
 				<datalist id="artist-b-suggestions"></datalist>
 				<button id="submit" type="button">Submit</button>
+			</div>
+			<div id="relationship-output">
+				<div id="artist-a-output"></div>
+				<div id="artist-b-output"></div>
 			</div>
 		</div>
 		<div id="footer">
