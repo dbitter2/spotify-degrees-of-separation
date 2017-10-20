@@ -2,7 +2,7 @@ var spotifyApi = require("spotify-web-api-node");
 var spotify = new spotifyApi({
 	clientId: "bfe086d33c104a5fbd6af4c8183d4dd9",
 	clientSecret: "498e6c721509402eba2d5dcfa8b481e5",
-	redirectUri: "http://18.221.74.204/creative/jquery/"
+	redirectUri: "http://18.221.74.204/creative/angular/"
 });
 
 var token = "";

@@ -1,37 +1,120 @@
-const temp = 0;
 const MAX_RELATED_ARTISTS = 5;
+const MAX_SEARCH_DEPTH = 5;
 const ENTER_KEY = 13;
-const SERVER = "http://[2605:a601:e04:300:154e:7ced:edab:5875]:8000/";
+const SERVER = "http://18.221.74.204:3001/";
 var artistNameIdMap = {};
 
-
 $(document).ready(function () {
-	$("#submit").click(submit);
+	// $("#submit").click(submit);
 
-	$("#artist-b-input").keypress(function (event) {
-		if(event.which === ENTER_KEY) {
-			submit();
-		}
-	});
+	// $("#artist-b-input").keypress(function (event) {
+	// 	if(event.which === ENTER_KEY) {
+	// 		submit();
+	// 	}
+	// });
 
 	$("#artist-a-input").keyup(updateArtistASuggestions);
 
 	$("#artist-b-input").keyup(updateArtistBSuggestions);
 });
 
-function submit() {
+function submit($scope) {
 	var artistA = artistNameIdMap[$("#artist-a-input").val()];
 	var artistB = artistNameIdMap[$("#artist-b-input").val()];
 	if(artistA !== undefined && artistB !== undefined) {
-		getRelatedArtists(artistA).then(function (artists) {
-			$("#artist-a-output").text($("#artist-a-input").val() + " Related Artists: " + JSON.stringify(artists));
-		});
-		getRelatedArtists(artistB).then(function (artists) {
-			$("#artist-b-output").text($("#artist-b-input").val() + " Related Artists: " + JSON.stringify(artists));
+		var connections = {};
+		connections[artistA] = undefined;
+		getConnections([artistA], artistB, connections, 0).then(function (result) {
+			if(result.common !== undefined) {
+				connections = result.connections;
+				var current = result.common;
+				var artists = [];
+				while(current !== undefined) {
+					console.log(current);
+					artists.push(current);
+					current = connections[current];
+				}
+				updateArtists($scope, artists.reverse());
+			} else {
+				$("#connection-output").text("These artists aren't connected within " + MAX_SEARCH_DEPTH + " levels of related artists.");
+			}
 		});
 	} else {
-		$("#relationship-output").text("Something weird happened. I don't have a Spotify id for one or both of those artists.");
+		$("#connection-output").text("Something weird happened. I don't have a Spotify id for one or both of those artists.");
 	}
+}
+
+function updateArtists($scope, artistIds) {
+	$scope.artists = [];
+	var promises = [];
+	artistIds.forEach(function (artistId) {
+		promises.push(getArtist(artistId));
+	});
+	Promise.all(promises).then(function (artists) {
+		artists.forEach(function (artist) {
+			$scope.artists.push(artist);
+		});
+	});
+	$("#pseudo-body").focus();
+}
+
+function getConnections(fromArtists, toArtist, connections, depth) {
+	console.log(fromArtists);
+	console.log(toArtist);
+	console.log(connections);
+	console.log(depth);
+	if (depth < MAX_SEARCH_DEPTH) {
+		var promises = [];
+		fromArtists.forEach(function (fromArtist) {
+			promises.push(getRelatedArtists(fromArtist));
+		});
+		return Promise.all(promises).then(function (values) {
+			artistsAtDepth = [];
+			values.forEach(function (relatedArtists, index) {
+				relatedArtists.forEach(function (relatedArtist) {
+					if(artistsAtDepth.indexOf(relatedArtist) === -1) {
+						artistsAtDepth.push(relatedArtist);
+					}
+					if(!connections.hasOwnProperty(relatedArtist)) {
+						connections[relatedArtist] = fromArtists[index];
+					}
+				});
+			});
+			for(var i = 0; i < artistsAtDepth.length; i++) {
+				var fromArtist = artistsAtDepth[i];
+				if (fromArtist === toArtist) {
+					return {
+						common: fromArtist,
+						connections: connections
+					};
+				}
+			}
+			return getConnections(artistsAtDepth, toArtist, connections, depth + 1);
+		});	
+	}
+	return new Promise(function (resolve, reject) {
+		resolve({
+			common: undefined,
+			connections: undefined
+		});
+	});
+}
+
+function getArtist(artistId) {
+	var artistUrl = "https://api.spotify.com/v1/artists/" + artistId;
+	return authenticate().then(function (token) {
+		return new Promise(function (resolve, reject) {
+			$.ajax(artistUrl, {
+				headers: {"Authorization": "Bearer " + token},
+				success: function (response) {
+					resolve({
+						name: response.name,
+						image: response.images[0].url
+					});
+				}
+			});
+		});
+	});
 }
 
 function getRelatedArtists(artistId) {
@@ -43,9 +126,9 @@ function getRelatedArtists(artistId) {
 				success: function (response) {
 					var artists = response.artists.filter(function (artist, index) {
 						return index < MAX_RELATED_ARTISTS;
-					})
+					});
 					artists = artists.map(function (artist) {
-						return artist.name;
+						return artist.id;
 					});
 					resolve(artists);
 				}
@@ -72,7 +155,9 @@ function updateArtistBSuggestions() {
 
 function searchArtists(input) {
 	if(input === "") {
-		return [];
+		return new Promise(function (resolve, reject) {
+			resolve([]);
+		});
 	}
 	return authenticate().then(function (token) {
 		var artists = [];
@@ -114,3 +199,28 @@ function authenticate() {
 function sanitize(input) {
 	return input.replace(/\s+/g, "+");
 }
+
+var app = angular.module('app', []);
+app.controller("mainCtrl", function ($scope) {
+	$scope.artists = [];
+	$scope.submit = function (artistForm) {
+		submit($scope);
+		artistForm.from = "";
+		artistForm.to = "";
+	};
+});
+app.directive("artist", function () {
+	return {
+		scope: {
+			artist: "=" // Get an object from the user property
+		},
+		restrict: "E", // Use directive as element
+		replace: "true",
+		template: (
+			"<div class='Artist'>" +
+				"<img ng-src='{{artist.image}}'/>" +
+        		"<h3>{{artist.name}}</h3>" + 
+      		"</div>"
+  		)
+	};
+});

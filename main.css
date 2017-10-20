@@ -8,6 +8,28 @@ h1 {
 	text-align: center;
 }
 
+.Artist {
+   display: inline-block;
+   margin-top: 50px;
+   margin-left: 10px;
+   margin-right: 10px;
+}
+
+.Artist > img {
+   border-radius: 50%;
+   height: 150px;
+   width: 150px;
+   border: solid black 1px;
+}
+
+.Artist > h3 {
+   color: mediumpurple;
+}
+
+#submit {
+   margin-top: 10px;
+}
+
 #pseudo-body {
    min-height: 100%;
    position: relative;
@@ -16,11 +38,13 @@ h1 {
 #header {
    background: darkcyan;
    padding: 10px;
+   border-bottom: black solid 1px;
 }
 
 #main-content {
    padding-bottom: 118px;   /* Height of the footer including most of the padding */
    position: relative;
+   text-align: center;
 }
 
 #footer {
@@ -32,6 +56,7 @@ h1 {
    bottom: 0;
    width: 100%;
    height: 102px;   /* Height of the footer */
+   border-top: black solid 1px;
 }
 
 #github-icon {

@@ -1,26 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Spotify Related Artists</title>
+	<title>Spotify Artist Connections</title>
 	<script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>
 	<script src="main.js"></script>
+	<!-- <script src="app.js"></script> -->
 	<link rel="stylesheet" type="text/css" href="main.css"></link>
 </head>
 <body>
-	<div id="pseudo-body">
-		<div id="header"><h1>Find Related Artists for Two Artists</h1></div>
+	<div ng-app="app" ng-controller="mainCtrl" id="pseudo-body">
+		<div id="header"><h1>Calculate Connection Between Artists on Spotify</h1></div>
 		<div id="main-content">
-			<div id="artist-input">
-				<p>Enter two artists and submit to get their respective related artists.</p>
+			<form name="artistForm" ng-submit="submit(artistForm)" id="artist-input">
+				<p>Enter two artists and submit to calculate their connection.</p>
+				<input ng-model="artistForm.from" id="artist-a-input" list="artist-a-suggestions" type="text" placeholder="Artist A"/>
+				<datalist id="artist-a-suggestions"></datalist>
+				<input ng-model="artistForm.to" id="artist-b-input" list="artist-b-suggestions" type="text" placeholder="Artist B"/>
+				<datalist id="artist-b-suggestions"></datalist><br>
+				<button id="submit" type="submit">Submit</button>
+			</form>
+
+			<!-- <div id="artist-input">
+				<p>Enter two artists and submit to calculate their connection.</p>
 				<input id="artist-a-input" list="artist-a-suggestions" type="text" placeholder="Artist A"/>
 				<datalist id="artist-a-suggestions"></datalist>
 				<input id="artist-b-input" list="artist-b-suggestions" type="text" placeholder="Artist B"/>
-				<datalist id="artist-b-suggestions"></datalist>
+				<datalist id="artist-b-suggestions"></datalist><br>
 				<button id="submit" type="button">Submit</button>
-			</div>
-			<div id="relationship-output">
-				<div id="artist-a-output"></div>
-				<div id="artist-b-output"></div>
+			</div> -->
+
+			<div id="connection-output">
+				<artist artist="artist" ng-repeat="artist in artists"/>
 			</div>
 		</div>
 		<div id="footer">
