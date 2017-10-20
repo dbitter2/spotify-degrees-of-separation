@@ -10,7 +10,6 @@ h1 {
 
 .Artist {
    display: inline-block;
-   margin-top: 50px;
    margin-left: 10px;
    margin-right: 10px;
 }
@@ -28,6 +27,10 @@ h1 {
 
 #submit {
    margin-top: 10px;
+}
+
+#connection-output {
+   margin-top: 50px;
 }
 
 #pseudo-body {

@@ -1,5 +1,5 @@
 const MAX_RELATED_ARTISTS = 5;
-const MAX_SEARCH_DEPTH = 5;
+const MAX_SEARCH_DEPTH = 4;
 const ENTER_KEY = 13;
 const SERVER = "http://18.221.74.204:3001/";
 var artistNameIdMap = {};
@@ -19,6 +19,7 @@ $(document).ready(function () {
 });
 
 function submit($scope) {
+	$("#connection-output-error").text("");
 	var artistA = artistNameIdMap[$("#artist-a-input").val()];
 	var artistB = artistNameIdMap[$("#artist-b-input").val()];
 	if(artistA !== undefined && artistB !== undefined) {
@@ -36,11 +37,11 @@ function submit($scope) {
 				}
 				updateArtists($scope, artists.reverse());
 			} else {
-				$("#connection-output").text("These artists aren't connected within " + MAX_SEARCH_DEPTH + " levels of related artists.");
+				$("#connection-output-error").text("These artists aren't connected within " + MAX_SEARCH_DEPTH + " levels of related artists.");
 			}
 		});
 	} else {
-		$("#connection-output").text("Something weird happened. I don't have a Spotify id for one or both of those artists.");
+		$("#connection-output-error").text("Something weird happened. I don't have a Spotify id for one or both of those artists.");
 	}
 }
 
@@ -204,6 +205,7 @@ var app = angular.module('app', []);
 app.controller("mainCtrl", function ($scope) {
 	$scope.artists = [];
 	$scope.submit = function (artistForm) {
+		$scope.artists = [];
 		submit($scope);
 		artistForm.from = "";
 		artistForm.to = "";

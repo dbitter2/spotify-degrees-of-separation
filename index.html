@@ -5,7 +5,6 @@
 	<script src="http://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js"></script>
 	<script src="main.js"></script>
-	<!-- <script src="app.js"></script> -->
 	<link rel="stylesheet" type="text/css" href="main.css"></link>
 </head>
 <body>
@@ -13,7 +12,7 @@
 		<div id="header"><h1>Calculate Connection Between Artists on Spotify</h1></div>
 		<div id="main-content">
 			<form name="artistForm" ng-submit="submit(artistForm)" id="artist-input">
-				<p>Enter two artists and submit to calculate their connection.</p>
+				<p>Enter two artists and submit to calculate their connection. If results don't appear after 30 seconds try typing in either of the inputs.</p>
 				<input ng-model="artistForm.from" id="artist-a-input" list="artist-a-suggestions" type="text" placeholder="Artist A"/>
 				<datalist id="artist-a-suggestions"></datalist>
 				<input ng-model="artistForm.to" id="artist-b-input" list="artist-b-suggestions" type="text" placeholder="Artist B"/>
@@ -21,16 +20,8 @@
 				<button id="submit" type="submit">Submit</button>
 			</form>
 
-			<!-- <div id="artist-input">
-				<p>Enter two artists and submit to calculate their connection.</p>
-				<input id="artist-a-input" list="artist-a-suggestions" type="text" placeholder="Artist A"/>
-				<datalist id="artist-a-suggestions"></datalist>
-				<input id="artist-b-input" list="artist-b-suggestions" type="text" placeholder="Artist B"/>
-				<datalist id="artist-b-suggestions"></datalist><br>
-				<button id="submit" type="button">Submit</button>
-			</div> -->
-
 			<div id="connection-output">
+				<div id="connection-output-error"></div>
 				<artist artist="artist" ng-repeat="artist in artists"/>
 			</div>
 		</div>
